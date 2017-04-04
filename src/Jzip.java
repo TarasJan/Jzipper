@@ -1,52 +1,83 @@
 /**
  * Created by Janek Taras on 4/3/2017.
  */
-import java.io.FileWriter;
-import java.io.IOException;
+
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import javax.swing.event.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import java.io.File;
 
-public class Jzip {
+public class Jzip implements WindowListener {
 
-    private Frame main;
-    private Button button;
-    private Button button2;
-    private Label label;
-    private TextField tf1;
-    private TextField tf2;
+    private JFrame main;
+    private JButton button;
+    private JButton button2;
+    private JLabel label;
+    private JTextField tf1;
+    private JTextField tf2;
 
     public Jzip()
     {
 
         setupGUI();
-        //
+
+    }
+
+
+    @Override
+    public void windowOpened(WindowEvent e) {
+
+    }
+
+    @Override
+    public void windowClosing(WindowEvent windowEvent){
+        System.exit(0);
+    }
+
+    @Override
+    public void windowClosed(WindowEvent e) {
+        System.exit(0);
+    }
+
+    @Override
+    public void windowIconified(WindowEvent e) {
+
+    }
+
+    @Override
+    public void windowDeiconified(WindowEvent e) {
+
+    }
+
+    @Override
+    public void windowActivated(WindowEvent e) {
+
+    }
+
+    @Override
+    public void windowDeactivated(WindowEvent e) {
+
     }
 
     private void setupGUI()
     {
-        main = new Frame("Java Zip Unpacker");
-        main.setSize(400,400);
-        main.setLayout(new GridLayout(3, 2));
-        main.addWindowListener(new WindowAdapter() {
-            public void windowClosing(WindowEvent windowEvent){
-                System.exit(0);
-            }
-        });
-        tf1 = new TextField();
-        tf2 = new TextField();
+        main = new JFrame("Java Zip Unpacker");
+        main.setSize(400,300);
+        main.setLayout(new BoxLayout(main.getContentPane(),3));
+        main.addWindowListener(this);
+        tf1 = new JTextField();
+        tf2 = new JTextField();
         tf1.setEditable(false);
         tf2.setEditable(false);
-        button = new Button("Select");
-        button2 = new Button("Unpack");
+        button = new JButton("Select");
+        button2 = new JButton("Unpack");
         button.setActionCommand("Select");
         button2.setActionCommand("Unpack");
 
 
-        label = new Label("Select a file to unpack");
+        label = new JLabel("Select a file to unpack");
         main.add(tf1);
         main.add(button);
         main.add(tf2);
@@ -56,13 +87,15 @@ public class Jzip {
         button.addActionListener(new ButtonClickListener());
         button2.addActionListener(new ButtonClickListener());
 
+
     }
 
 
-    private class ButtonClickListener implements ActionListener{
+    private class ButtonClickListener implements ActionListener {
+        @Override
         public void actionPerformed(ActionEvent e) {
-            String command = e.getActionCommand();
-            if( command.equals( "Select" ))  {
+            Object source = e.getSource();
+            if( source == button)  {
                 label.setText("Specify output folder.");
                 JFileChooser chooser = new JFileChooser();
                 FileNameExtensionFilter filter = new FileNameExtensionFilter(
@@ -73,7 +106,7 @@ public class Jzip {
                     tf1.setText(chooser.getSelectedFile().getAbsolutePath());
                 }
             }
-            else if( command.equals( "Unpack" ) )  {
+            else if( source == button2 )  {
                 if(tf1.getText().equals("")) {
                     JOptionPane.showMessageDialog(main,
                             "Select an archive first!!!");
@@ -110,6 +143,8 @@ public class Jzip {
                 label.setText("Select a file to unpack");
             }
         }
+
+
     }
 
 

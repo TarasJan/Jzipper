@@ -112,23 +112,7 @@ public class Jzip {
         }
     }
 
-/* I was trying to create something different at first :)
-    private void generateHTML()
-    {
-        File f = new File("content.html");
-        try {
-            FileWriter writer = new FileWriter(f);
-            writer.close();
-        }
-        catch(IOException e)
-        {
-            System.out.println("Unable to generate HTML. Aborting the program.");
-            System.exit(1);
-        }
 
-
-    }
-*/
     public static void main(String[] args)
     {
         Jzip jzip = new Jzip();

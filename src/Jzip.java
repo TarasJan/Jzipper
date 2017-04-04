@@ -2,10 +2,9 @@
  * Created by Janek Taras on 4/3/2017.
  */
 
-import java.awt.*;
+
 import java.awt.event.*;
 import javax.swing.*;
-import javax.swing.event.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 
@@ -64,7 +63,6 @@ public class Jzip implements WindowListener {
     private void setupGUI()
     {
         main = new JFrame("Java Zip Unpacker");
-        main.setSize(400,300);
         main.setLayout(new BoxLayout(main.getContentPane(),3));
         main.addWindowListener(this);
         tf1 = new JTextField();
@@ -86,7 +84,7 @@ public class Jzip implements WindowListener {
         main.setVisible(true);
         button.addActionListener(new ButtonClickListener());
         button2.addActionListener(new ButtonClickListener());
-
+        main.pack();
 
     }
 
@@ -104,6 +102,7 @@ public class Jzip implements WindowListener {
                 int returnVal = chooser.showOpenDialog(main);
                 if(returnVal == JFileChooser.APPROVE_OPTION) {
                     tf1.setText(chooser.getSelectedFile().getAbsolutePath());
+                    main.pack();
                 }
             }
             else if( source == button2 )  {
@@ -119,6 +118,7 @@ public class Jzip implements WindowListener {
                     int returnVal = chooser.showOpenDialog(main);
                     if(returnVal == JFileChooser.APPROVE_OPTION) {
                         tf2.setText(chooser.getSelectedFile().getAbsolutePath());
+                        main.pack();
                     }
                 }
 

@@ -197,8 +197,8 @@ public class Jzip implements WindowListener {
                 else {
                     chooser = new JFileChooser();
                     chooser.setMultiSelectionEnabled(true);
-                    //na razie nie mozna
-                    //chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+
+                    chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
                     int returnVal = chooser.showOpenDialog(null);
                     if (returnVal == JFileChooser.APPROVE_OPTION) {
 

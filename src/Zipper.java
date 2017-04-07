@@ -2,7 +2,10 @@
  * Created by Janek Taras on 4/4/2017.
  */
 
+
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.zip.*;
 import java.io.*;
 
@@ -10,6 +13,23 @@ public class Zipper {
 
     // buffer 2kb for reading writing zips
     private static final int buffer = 2048;
+
+
+    public static void listf(String directoryName, ArrayList<File> files) {
+        File directory = new File(directoryName);
+
+        // get all the files from a directory
+        File[] fList = directory.listFiles();
+        for (File file : fList) {
+            if (file.isFile()) {
+                files.add(file);
+            } else if (file.isDirectory()) {
+                listf(file.getAbsolutePath(), files);
+            }
+        }
+    }
+
+
 
     private static void writeFile(ZipOutputStream zout,File file,String destPath)
     {
@@ -105,10 +125,25 @@ public class Zipper {
              zout = new ZipOutputStream(new FileOutputStream(f));
 
              // looping through all entries
-             for(File ef : files)
+             ArrayList<File> tmp_files = new ArrayList<File>(Arrays.asList(files));
+             ArrayList<File> nu_files = new ArrayList<File>(Arrays.asList(files));
+             for(File ef : tmp_files)
              {
-                 writeFile(zout,ef,destFile);
+                 System.out.println(ef.getAbsolutePath());
+                 if(ef.isDirectory())
+                 {
+                    listf(ef.getAbsolutePath(),nu_files);
+                 }
+                 //if(!ef.isDirectory())writeFile(zout,ef,destFile);
              }
+
+             for(File ef : nu_files)
+             {
+                 System.out.println(ef.getAbsolutePath());
+
+                 if(!ef.isDirectory())writeFile(zout,ef,destFile);
+             }
+
          }
          catch(IOException e)
          {
@@ -118,6 +153,7 @@ public class Zipper {
              if (zout != null)
              {
                  try {
+                     System.out.println("Writing finished");
                      zout.close();
                  }
                  catch (IOException e){

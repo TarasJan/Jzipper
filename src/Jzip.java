@@ -3,6 +3,7 @@
  */
 
 
+import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
 import javax.swing.*;
@@ -12,6 +13,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 public class Jzip implements WindowListener {
 
     private JFrame main;
+
     private JButton button;
     private JButton button2;
     private JLabel label;
@@ -19,6 +21,9 @@ public class Jzip implements WindowListener {
     private JTextField tf1;
     private JTextField tf2;
 
+
+    private JMenuBar menuBar;
+    private JMenuItem about;
 
     private File[] files ;
 
@@ -33,7 +38,6 @@ public class Jzip implements WindowListener {
         setupGUI();
 
     }
-
 
     @Override
     public void windowOpened(WindowEvent e) {
@@ -72,9 +76,20 @@ public class Jzip implements WindowListener {
 
     private void setupGUI()
     {
-        main = new JFrame("Java Zip Unpacker");
+        main = new JFrame("Jzip");
+        main.setSize(new Dimension(200,200));
+        main.setResizable(false);
         main.setLayout(new BoxLayout(main.getContentPane(),3));
         main.addWindowListener(this);
+
+
+        menuBar = new JMenuBar();
+        about = new JMenuItem("About");
+        about.addActionListener( new aboutItemListener());
+        menuBar.add(about);
+
+
+
         tf1 = new JTextField();
         tf2 = new JTextField();
         tf1.setEditable(false);
@@ -91,8 +106,17 @@ public class Jzip implements WindowListener {
         button2.setActionCommand("Unpack");
 
 
-        label = new JLabel("Select a file to unpack");
-        headerLabel = new JLabel("Zip/Unzip mode selection");
+        label = new JLabel("Select a file to unpack",SwingConstants.CENTER);
+        headerLabel = new JLabel("Zip/Unzip mode selection",SwingConstants.CENTER);
+
+        main.add(menuBar);
+
+        headerLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        combo.setAlignmentX(Component.CENTER_ALIGNMENT);
+        button.setAlignmentX(Component.CENTER_ALIGNMENT);
+        button2.setAlignmentX(Component.CENTER_ALIGNMENT);
+        label.setAlignmentX(Component.CENTER_ALIGNMENT);
+
 
         main.add(headerLabel);
         main.add(combo);
@@ -101,13 +125,23 @@ public class Jzip implements WindowListener {
         main.add(tf2);
         main.add(button2);
         main.add(label);
+
         main.setVisible(true);
         button.addActionListener(new ButtonClickListener());
         button2.addActionListener(new ButtonClickListener());
-        main.pack();
+
 
     }
 
+
+    private class aboutItemListener implements  ActionListener
+    {
+        @Override
+        public void actionPerformed(ActionEvent e)
+        {
+            JOptionPane.showMessageDialog(main,"Jzip - simple zip file manager by Jan Taras\nFor royalty free use.");
+        }
+    }
 
     private class ComboBoxListener implements ActionListener
     {
@@ -119,11 +153,15 @@ public class Jzip implements WindowListener {
             if(state.equals("Zip"))
             {
                 button2.setText("Compress");
+                tf1.setText("");
+                tf2.setText("");
                 writeMode = true;
             }
             else
             {
                 button2.setText("Unpack");
+                tf1.setText("");
+                tf2.setText("");
                 writeMode = false;
             }
         }
@@ -145,24 +183,37 @@ public class Jzip implements WindowListener {
                     chooser.setFileFilter(filter);
                     int returnVal = chooser.showOpenDialog(main);
                     if (returnVal == JFileChooser.APPROVE_OPTION) {
+
                         tf1.setText(chooser.getSelectedFile().getAbsolutePath());
 
+                    }
+                    else
+                    {
+                        JOptionPane.showMessageDialog(main,"No file for unpacking selected!");
+                        return;
                     }
                 }
                 // wybor kilku plikow do archiwom
                 else {
                     chooser = new JFileChooser();
                     chooser.setMultiSelectionEnabled(true);
+                    //na razie nie mozna
+                    //chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
                     int returnVal = chooser.showOpenDialog(null);
                     if (returnVal == JFileChooser.APPROVE_OPTION) {
-                        System.out.println(chooser.getSelectedFiles());
+
                          files = chooser.getSelectedFiles();
                         tf1.setText(files.toString());
+                    }
+                    else
+                    {
+                        JOptionPane.showMessageDialog(main,"No files for packaging selected!");
+                        return;
                     }
 
                 }
 
-                main.pack();
+
             }
             else if( source == button2 )  {
                 if(tf1.getText().equals("")) {
@@ -179,6 +230,11 @@ public class Jzip implements WindowListener {
                         if (returnVal == JFileChooser.APPROVE_OPTION) {
                             tf2.setText(chooser.getSelectedFile().getAbsolutePath());
                         }
+                        else
+                        {
+                            JOptionPane.showMessageDialog(main,"No destination folder selected!");
+                            return;
+                        }
                     }
                     else
                     {
@@ -188,9 +244,14 @@ public class Jzip implements WindowListener {
                         if (returnVal == JFileChooser.APPROVE_OPTION) {
                             tf2.setText(chooser.getSelectedFile().getAbsolutePath());
                         }
+                        else
+                        {
+                            JOptionPane.showMessageDialog(main,"No destination file selected!");
+                            return;
+                        }
 
                     }
-                    main.pack();
+
 
                 }
 
@@ -207,7 +268,7 @@ public class Jzip implements WindowListener {
                         String destinationFile = tf2.getText();
                         System.out.println("Writing reached");
                         System.out.println(destinationFile);
-                        //if(files.equals(null))System.out.println("GÓWNO");
+
                         Zipper.zip(files,destinationFile);
                     }
 
@@ -233,11 +294,9 @@ public class Jzip implements WindowListener {
 
     }
 
-
     public static void main(String[] args)
     {
-        File[] f = {new File("src\\Jzip.java")};
-        Zipper.zip(f,"Lol.zip");
+
         Jzip jzip = new Jzip();
 
     }

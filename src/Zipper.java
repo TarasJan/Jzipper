@@ -15,7 +15,6 @@ public class Zipper {
     {
         System.out.println("Writing: " + file.getName());
 
-        String absPath = destPath + file.getName();
         FileInputStream fis =null;
         try {
             fis = new FileInputStream(file);
@@ -23,7 +22,6 @@ public class Zipper {
             zout.putNextEntry(zipEntry);
 
             byte data[] = new byte[buffer];
-            BufferedOutputStream stream = null;
 
             int length;
             while ((length = fis.read(data)) >= 0) {
@@ -105,8 +103,7 @@ public class Zipper {
          {
              /** Opening Zip input stream*/
              zout = new ZipOutputStream(new FileOutputStream(f));
-            // Setting up entries and buffer size
-             ZipEntry entry = null;
+
              // looping through all entries
              for(File ef : files)
              {

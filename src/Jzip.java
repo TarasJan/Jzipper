@@ -296,7 +296,8 @@ public class Jzip implements WindowListener {
 
     public static void main(String[] args)
     {
-
+        Folder f = new Folder(new File("C:\\Users\\Janek Taras\\Desktop\\songs"));
+        f.display();
         Jzip jzip = new Jzip();
 
     }

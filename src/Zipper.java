@@ -5,7 +5,6 @@
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.zip.*;
 import java.io.*;
 
@@ -14,32 +13,41 @@ public class Zipper {
     // buffer 2kb for reading writing zips
     private static final int buffer = 2048;
 
+private static void writeFolder(ZipOutputStream zout,Folder folder)throws  IOException
+{
+    System.out.println("Writing: " + folder.getPath());
 
-    public static void listf(String directoryName, ArrayList<File> files) {
-        File directory = new File(directoryName);
-
-        // get all the files from a directory
-        File[] fList = directory.listFiles();
-        for (File file : fList) {
-            if (file.isFile()) {
-                files.add(file);
-            } else if (file.isDirectory()) {
-                listf(file.getAbsolutePath(), files);
-            }
+    if(folder.getFiles().isEmpty()) {
+        try {
+            ZipEntry zipEntry = new ZipEntry(folder.getPath());
+            zout.putNextEntry(zipEntry);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
-
-
-
-
-    private static void writeFile(ZipOutputStream zout,File file,String destPath)
+    for (Folder fold : folder.getSubfolders())
     {
-        System.out.println("Writing: " + file.getName());
+        writeFolder(zout,fold);
+    }
+
+    for (File file : folder.getFiles())
+    {
+        if(!file.isDirectory())writeFile(zout,file,folder.getPath());
+    }
+
+    System.out.println("Successfully written " + folder.getPath());
+
+}
+
+
+    private static void writeFile(ZipOutputStream zout,File file,String folderPath)
+    {
+        System.out.println("Writing: " + folderPath + File.separator + file.getName());
 
         FileInputStream fis =null;
         try {
             fis = new FileInputStream(file);
-            ZipEntry zipEntry = new ZipEntry(file.getName());
+            ZipEntry zipEntry = new ZipEntry(folderPath + File.separator + file.getName());
             zout.putNextEntry(zipEntry);
 
             byte data[] = new byte[buffer];
@@ -66,6 +74,42 @@ public class Zipper {
         }
 
     }
+
+    private static void writeFile(ZipOutputStream zout,File file)
+    {
+        System.out.println(file.getName());
+
+        FileInputStream fis =null;
+        try {
+            fis = new FileInputStream(file);
+            ZipEntry zipEntry = new ZipEntry(file.getName());
+            zout.putNextEntry(zipEntry);
+
+            byte data[] = new byte[buffer];
+
+            int length;
+            while ((length = fis.read(data)) >= 0) {
+                zout.write(data, 0, length);
+            }
+
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        finally {
+            if (fis != null) {
+                try {
+                    fis.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }
+
+    }
+
 
 
     private static void parseEntry(ZipInputStream zin,ZipEntry entry,String destPath) {
@@ -126,23 +170,34 @@ public class Zipper {
              zout = new ZipOutputStream(new FileOutputStream(f));
 
              // looping through all entries
-             ArrayList<File> tmp_files = new ArrayList<File>(Arrays.asList(files));
-             ArrayList<File> nu_files = new ArrayList<File>(Arrays.asList(files));
-             for(File ef : tmp_files)
+             ArrayList<Folder> folders = new ArrayList<Folder>();
+             ArrayList<File> filez = new ArrayList<File>();
+             for(File ef : files)
              {
                  System.out.println(ef.getAbsolutePath());
                  if(ef.isDirectory())
                  {
-                    listf(ef.getAbsolutePath(),nu_files);
+                    folders.add(new Folder(ef));
+                 }
+                 else
+                 {
+                    filez.add(ef);
                  }
                  //if(!ef.isDirectory())writeFile(zout,ef,destFile);
              }
 
-             for(File ef : nu_files)
+             for (Folder fol : folders)
+             {
+                 System.out.println("Writing " + fol.getPath());
+                 writeFolder(zout,fol);
+
+             }
+
+             for(File ef : filez)
              {
                  System.out.println(ef.getAbsolutePath());
 
-                 if(!ef.isDirectory())writeFile(zout,ef,destFile);
+                 writeFile(zout,ef);
              }
 
          }

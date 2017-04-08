@@ -6,6 +6,14 @@ import java.util.ArrayList;
  */
 public class Folder {
 
+    public ArrayList<Folder> getSubfolders() {
+        return subfolders;
+    }
+
+    public ArrayList<File> getFiles() {
+        return files;
+    }
+
     private ArrayList<Folder> subfolders;
     private ArrayList<File> files;
     private String path;
@@ -16,7 +24,7 @@ public class Folder {
         emb_index =0;
         subfolders = new ArrayList<Folder>();
         files = new ArrayList<File>();
-        path = rootFile.getName() + File.pathSeparator;
+        path = rootFile.getName();
         lister(rootFile,this);
 
     }
@@ -25,12 +33,12 @@ public class Folder {
         emb_index = predecessor.getEmb()+1;
         subfolders = new ArrayList<Folder>();
         files = new ArrayList<File>();
-        path = predecessor.getPath() + File.pathSeparator + rootFile.getName() + File.pathSeparator;
+        path = predecessor.getPath() + File.separator + rootFile.getName();
         lister(rootFile,this);
     }
 
 
-    public  void lister(File f, Folder folder) {
+    private  void lister(File f, Folder folder) {
         File directory = f;
 
         // get all the files from a directory
@@ -57,7 +65,7 @@ public class Folder {
         System.out.println(path);
         for (Folder f : subfolders)f.display();
         for (File f : files){
-            for(int i=0;i<emb_index;i++)System.out.print(">");
+            for(int i=0;i<emb_index+1;i++)System.out.print(">");
             System.out.println(f.getName());
         }
     }

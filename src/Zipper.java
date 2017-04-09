@@ -19,7 +19,7 @@ private static void writeFolder(ZipOutputStream zout,Folder folder)throws  IOExc
 
     if(folder.getFiles().isEmpty()) {
         try {
-            ZipEntry zipEntry = new ZipEntry(folder.getPath());
+            ZipEntry zipEntry = new ZipEntry(folder.getPath()+File.separator+"placeholder");
             zout.putNextEntry(zipEntry);
         } catch (IOException e) {
             e.printStackTrace();

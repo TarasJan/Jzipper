@@ -21,20 +21,27 @@ public class Jzip implements WindowListener {
     private JTextField tf1;
     private JTextField tf2;
 
+    // Group for handling format buttons
+    private ButtonGroup group;
+
 
     private JMenuBar menuBar;
+    private JMenuItem formatMenu;
     private JMenuItem about;
 
     private File[] files ;
 
     private JComboBox<String> combo;
 
+
     private boolean writeMode;
+    private String format;
 
     public Jzip()
     {
         files = null;
         writeMode = false;
+        format = "Zip";
         setupGUI();
 
     }
@@ -85,10 +92,30 @@ public class Jzip implements WindowListener {
 
         menuBar = new JMenuBar();
         about = new JMenuItem("About");
+        formatMenu = new JMenu("Compression format");
+        formatMenu.setMnemonic(KeyEvent.VK_F);
+
+        group = new ButtonGroup();
+
+        JRadioButtonMenuItem rbMenuItem = new JRadioButtonMenuItem("Zip");
+        rbMenuItem.setSelected(true);
+        rbMenuItem.setMnemonic(KeyEvent.VK_R);
+        rbMenuItem.setActionCommand("Zip");
+        rbMenuItem.addActionListener(new FormatMenuListener());
+        group.add(rbMenuItem);
+        formatMenu.add(rbMenuItem);
+
+        rbMenuItem = new JRadioButtonMenuItem("Gzip");
+        rbMenuItem.setMnemonic(KeyEvent.VK_O);
+        rbMenuItem.setActionCommand("Gzip");
+        rbMenuItem.addActionListener(new FormatMenuListener());
+        group.add(rbMenuItem);
+        formatMenu.add(rbMenuItem);
+
+        menuBar.add(formatMenu);
+
         about.addActionListener( new aboutItemListener());
         menuBar.add(about);
-
-
 
         tf1 = new JTextField();
         tf2 = new JTextField();
@@ -96,9 +123,11 @@ public class Jzip implements WindowListener {
         tf2.setEditable(false);
 
         String[] options = {"Unzip","Zip"};
+
         combo = new JComboBox<String>(options);
         combo.setSelectedIndex(0);
         combo.addActionListener(new ComboBoxListener());
+
 
         button = new JButton("Select");
         button2 = new JButton("Unpack");
@@ -167,6 +196,18 @@ public class Jzip implements WindowListener {
         }
     }
 
+    private class FormatMenuListener implements ActionListener
+    {
+        @Override
+        public void actionPerformed(ActionEvent e)
+        {
+            format = group.getSelection().getActionCommand();
+            System.out.println(format);
+        }
+    }
+
+
+
     private class ButtonClickListener implements ActionListener {
 
 
@@ -178,8 +219,14 @@ public class Jzip implements WindowListener {
                 label.setText("Specify output folder.");
                 JFileChooser chooser = new JFileChooser();
                 if (!writeMode) {
-                    FileNameExtensionFilter filter = new FileNameExtensionFilter(
-                            "ZIP archives", "zip");
+                    FileNameExtensionFilter filter = null;
+                    if(group.getSelection().getActionCommand()=="Zip"){filter = new FileNameExtensionFilter(
+                            "ZIP archives", "zip");}
+                    else
+                                {
+                                    filter = new FileNameExtensionFilter(
+                                            "GZIP archives", "gz");
+                    }
                     chooser.setFileFilter(filter);
                     int returnVal = chooser.showOpenDialog(main);
                     if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -261,7 +308,7 @@ public class Jzip implements WindowListener {
                     if(!writeMode) {
                         String sourceFile = tf1.getText();
                         String destinationFolder = tf2.getText() + "\\";
-                        Zipper.unzip(sourceFile,destinationFolder);
+                        Zipper.unzip(sourceFile,destinationFolder,format);
                     }
                     else
                     {
@@ -296,8 +343,7 @@ public class Jzip implements WindowListener {
 
     public static void main(String[] args)
     {
-        Folder f = new Folder(new File("C:\\Users\\Janek Taras\\Desktop\\songs"));
-        f.display();
+
         Jzip jzip = new Jzip();
 
     }

@@ -2,7 +2,6 @@
  * Created by Janek Taras on 4/4/2017.
  */
 
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.zip.*;
@@ -116,6 +115,11 @@ private static void writeFolder(ZipOutputStream zout,Folder folder)throws  IOExc
         System.out.println("Extracting: " + entry);
 
         String absPath = destPath + entry.getName();
+
+        // Creepy solution for gzip format
+
+
+
         // checking if not writing a directory
         if (entry.isDirectory()) {
             File f = new File(absPath);
@@ -223,7 +227,36 @@ private static void writeFolder(ZipOutputStream zout,Folder folder)throws  IOExc
      }
 
 
-    public static boolean unzip(String filePath, String destPath) {
+    public static boolean unzip(String filePath, String destPath,String format) {
+
+
+
+    if (format == "Gzip"){
+
+
+        GZIPInputStream gin = null;
+        try {
+            gin = new GZIPInputStream(new FileInputStream(filePath));
+
+            BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(destPath + "gzip.output"));
+            byte[] buf = new byte[1024];
+            int len;
+            while ((len = gin.read(buf)) > 0) {
+                stream.write(buf, 0, len);
+                stream.flush();
+            }
+            stream.close();
+            gin.close();
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+
+
+
+        return true;
+    }
 
 /** Finding the file setting up streams*/
         ZipInputStream zin=null;
